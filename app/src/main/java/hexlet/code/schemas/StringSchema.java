@@ -1,6 +1,6 @@
-package hexlet.code;
+package hexlet.code.schemas;
 
-public class StringSchema {
+public class StringSchema  {
     private boolean required = false;
     private Integer minLength = null;
     private String contains = null;
@@ -25,10 +25,8 @@ public class StringSchema {
             return true;
         }
 
-        if (required) {
-            if (value == null || value.isEmpty()) {
-                return false;
-            }
+        if (required && (value == null || value.isEmpty())) {
+            return false;
         }
 
         if (minLength != null && value.length() < minLength) {

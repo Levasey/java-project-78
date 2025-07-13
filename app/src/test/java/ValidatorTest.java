@@ -1,4 +1,5 @@
-import hexlet.code.StringSchema;
+import hexlet.code.schemas.NumberSchema;
+import hexlet.code.schemas.StringSchema;
 import hexlet.code.Validator;
 import org.junit.jupiter.api.Test;
 
@@ -11,30 +12,61 @@ public class ValidatorTest {
         Validator v = new Validator();
         StringSchema schema = v.string();
 
-        // Проверка без ограничений
         assertTrue(schema.isValid(""));
         assertTrue(schema.isValid(null));
         assertTrue(schema.isValid("test string"));
 
-        // Проверка required()
         schema.required();
         assertFalse(schema.isValid(null));
         assertFalse(schema.isValid(""));
         assertTrue(schema.isValid("test string"));
 
-        // Проверка minLength()
         schema.minLength(5);
         assertFalse(schema.isValid("test"));
         assertTrue(schema.isValid("test string"));
 
-        // Проверка contains()
         schema.contains("test");
         assertTrue(schema.isValid("test string"));
         assertFalse(schema.isValid("another string"));
+    }
 
-        // Проверка перетирания ограничений
-        StringSchema schema2 = v.string();
-        schema2.minLength(10).minLength(4);
-        assertTrue(schema2.isValid("Hexlet"));
+    @Test
+    public void testNumberSchema() {
+        Validator v = new Validator();
+        NumberSchema schema = v.number();
+
+        assertTrue(schema.isValid(null));
+        assertTrue(schema.isValid(5));
+
+        schema.required();
+        assertFalse(schema.isValid(null));
+        assertTrue(schema.isValid(10));
+
+        schema.positive();
+        assertFalse(schema.isValid(-10));
+        assertFalse(schema.isValid(0));
+        assertTrue(schema.isValid(10));
+
+        schema.range(5, 10);
+        assertTrue(schema.isValid(5));
+        assertTrue(schema.isValid(10));
+        assertFalse(schema.isValid(4));
+        assertFalse(schema.isValid(11));
+    }
+
+    @Test
+    public void testMethodChaining() {
+        Validator v = new Validator();
+
+        // Проверка перетирания ограничений для строк
+        StringSchema stringSchema = v.string();
+        stringSchema.minLength(10).minLength(4);
+        assertTrue(stringSchema.isValid("Hexlet"));
+
+        // Проверка перетирания ограничений для чисел
+        NumberSchema numberSchema = v.number();
+        numberSchema.range(1, 10).range(5, 15);
+        assertTrue(numberSchema.isValid(10));
+        assertFalse(numberSchema.isValid(4));
     }
 }
