@@ -11,6 +11,13 @@ java {
     }
 }
 
+checkstyle {
+    toolVersion = '10.12.5'  // Latest stable version
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    showViolations = true
+}
+
 group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
 
@@ -20,8 +27,13 @@ repositories {
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params'
     testImplementation("org.assertj:assertj-core:3.27.2")
+
+    // For older IDEs
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
