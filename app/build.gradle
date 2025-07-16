@@ -11,6 +11,13 @@ java {
     }
 }
 
+checkstyle {
+    toolVersion = '10.12.5'  // Latest stable version
+    configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+    ignoreFailures = false
+    showViolations = true
+}
+
 group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
 
