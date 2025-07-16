@@ -5,6 +5,12 @@ plugins {
     id 'jacoco'
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 group = 'hexlet.code'
 version = '1.0-SNAPSHOT'
 
