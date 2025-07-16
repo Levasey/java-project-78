@@ -1,37 +1,22 @@
 package hexlet.code.schemas;
 
+import hexlet.code.schemas.states.NotRequiredState;
+import hexlet.code.schemas.states.RequiredState;
+import hexlet.code.schemas.states.ValidationState;
+
 import java.util.function.Predicate;
 
 public abstract class BaseSchema<T> {
-    //флаг, указывающий, является ли значение обязательным (не может быть null)
-    protected boolean required = false;
-    //массив предикатов (условий проверки), которые будут применяться к значению
-    protected Predicate<T>[] checks = new Predicate[0];
+    protected ValidationState requiredState = new NotRequiredState();
 
-    //аннотация, подавляющая предупреждение о возможных проблемах с безопасностью типов при использовании varargs с дженериками
-    @SafeVarargs
-    protected final void addCheck(Predicate<T>... predicates) {
-        this.checks = predicates;
+    public BaseSchema<T> required() {
+        this.requiredState = new RequiredState();
+        return this;
     }
 
-    public boolean isValid(T value) {
-        // Проверка на null для необязательных значений
-        if (!required && value == null) {
-            return true;
-        }
-
-        // Проверка на null для обязательных значений
-        if (required && value == null) {
-            return false;
-        }
-
-        // Применение всех проверок
-        for (Predicate<T> check : checks) {
-            if (!check.test(value)) {
-                return false;
-            }
-        }
-
-        return true;
+    protected boolean checkRequired(T value) {
+        return requiredState.isValid(value);
     }
+
+    public abstract boolean isValid(T value);
 }
