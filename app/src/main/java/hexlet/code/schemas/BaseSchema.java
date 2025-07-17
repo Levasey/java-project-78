@@ -9,41 +9,46 @@ import java.util.List;
 import java.util.function.Predicate;
 
 
-public abstract class BaseSchema {
-    private State requirement;
-    private final List<Predicate<Object>> predicates = new ArrayList<>();
+public abstract class BaseSchema<T> {
+    private State<T> requirement = new NotRequiredState<>();
+    private final List<Predicate<T>> predicates = new ArrayList<>();
 
-    public BaseSchema() {
-        this.requirement = new NotRequiredState();
-    }
-
-    public BaseSchema required() {
-        this.requirement = new RequiredState();
+    public BaseSchema<T> required() {
+        this.requirement = new RequiredState<>();
         return this;
     }
 
-    protected String getCurrentState() {
-        return requirement.getCurrentState();
-    }
-
-    protected void addCheck(Predicate<Object> predicate) {
-        // Удаляем предыдущий предикат того же типа, если он существует
+    protected void addCheck(Predicate<T> predicate) {
         predicates.removeIf(p -> p.getClass().equals(predicate.getClass()));
         predicates.add(predicate);
     }
 
-    public boolean isValid(Object value) {
-        // Проверка состояния required
+    /**
+    Принимает любой объект (Object) для валидации
+    Безопасно приводит его к нужному типу T
+    Делегирует проверку основному типизированному методу isValid
+     */
+    public boolean isValidUntyped(Object value) {
+        //Пытаемся привести входящий Object к generic-типу T
+        try {
+            //@SuppressWarnings("unchecked") подавляет предупреждение о небезопасном приведении типов
+            @SuppressWarnings("unchecked")
+            T typedValue = (T) value;
+            return isValid(typedValue);
+        } catch (ClassCastException e) {
+            return false;
+        }
+    }
+
+    public boolean isValid(T value) {
         if (!requirement.isValid(value)) {
             return false;
         }
 
-        // Если значение null и не требуется, то валидно
         if (value == null) {
             return requirement instanceof NotRequiredState;
         }
 
-        // Проверка всех предикатов
         return predicates.stream().allMatch(p -> p.test(value));
     }
 }

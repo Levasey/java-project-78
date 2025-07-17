@@ -2,40 +2,20 @@ package hexlet.code.schemas;
 
 import java.util.function.Predicate;
 
-public class StringSchema extends BaseSchema {
+public class StringSchema extends BaseSchema<String> {
     public StringSchema required() {
         super.required();
-        addCheck(value -> !((String) value).isEmpty());
+        addCheck(value -> !value.isEmpty());
         return this;
     }
 
     public StringSchema minLength(int length) {
-        addCheck(new Predicate<Object>() {
-            @Override
-            public boolean test(Object value) {
-                return ((String) value).length() >= length;
-            }
-
-            @Override
-            public int hashCode() {
-                return this.getClass().hashCode();
-            }
-        });
+        addCheck((Predicate<String>) value -> value.length() >= length);
         return this;
     }
 
     public StringSchema contains(String substring) {
-        addCheck(new Predicate<Object>() {
-            @Override
-            public boolean test(Object value) {
-                return ((String) value).contains(substring);
-            }
-
-            @Override
-            public int hashCode() {
-                return this.getClass().hashCode();
-            }
-        });
+        addCheck((Predicate<String>) value -> value.contains(substring));
         return this;
     }
 }

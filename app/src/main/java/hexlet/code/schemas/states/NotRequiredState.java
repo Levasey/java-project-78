@@ -1,13 +1,8 @@
 package hexlet.code.schemas.states;
 
-public class NotRequiredState implements State {
+public class NotRequiredState<T> implements State<T> {
     @Override
-    public boolean isValid(Object value) {
+    public boolean isValid(T value) {
         return true;
-    }
-
-    @Override
-    public String getCurrentState() {
-        return "not required";
     }
 }

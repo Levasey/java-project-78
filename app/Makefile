@@ -12,12 +12,6 @@ build:
 install:
 	./gradlew install
 
-run-dist:
-	./gradlew installDist
-
-run:
-	./gradlew run
-
 test:
 	./gradlew test
 
