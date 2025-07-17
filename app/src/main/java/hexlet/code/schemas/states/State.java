@@ -1,5 +1,6 @@
 package hexlet.code.schemas.states;
 
-public interface ValidationState {
+public interface State {
     boolean isValid(Object value);
+    String getCurrentState();
 }

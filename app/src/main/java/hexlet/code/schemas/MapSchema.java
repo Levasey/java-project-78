@@ -1,31 +1,26 @@
 package hexlet.code.schemas;
 
-import hexlet.code.schemas.states.NotRequiredState;
-
 import java.util.Map;
+import java.util.function.Predicate;
 
-public class MapSchema extends BaseSchema<Map<?, ?>> {
-    private Integer exactSize = null;
-
-    public MapSchema sizeof(int size) {
-        this.exactSize = size;
+public class MapSchema extends BaseSchema {
+    public MapSchema required() {
+        super.required();
         return this;
     }
 
-    @Override
-    public boolean isValid(Map<?, ?> value) {
-        if (!checkRequired(value)) {
-            return false;
-        }
+    public MapSchema sizeof(int size) {
+        addCheck(new Predicate<Object>() {
+            @Override
+            public boolean test(Object value) {
+                return ((Map<?, ?>) value).size() == size;
+            }
 
-        if (value == null) {
-            return requiredState instanceof NotRequiredState;
-        }
-
-        if (exactSize != null && value.size() != exactSize) {
-            return false;
-        }
-
-        return true;
+            @Override
+            public int hashCode() {
+                return this.getClass().hashCode();
+            }
+        });
+        return this;
     }
 }

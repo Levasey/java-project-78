@@ -1,39 +1,41 @@
 package hexlet.code.schemas;
 
-import hexlet.code.schemas.states.RequiredState;
+import java.util.function.Predicate;
 
-public class StringSchema extends BaseSchema<String> {
-    private Integer minLength = null;
-    private String contains = null;
+public class StringSchema extends BaseSchema {
+    public StringSchema required() {
+        super.required();
+        addCheck(value -> !((String) value).isEmpty());
+        return this;
+    }
 
     public StringSchema minLength(int length) {
-        this.minLength = length;
+        addCheck(new Predicate<Object>() {
+            @Override
+            public boolean test(Object value) {
+                return ((String) value).length() >= length;
+            }
+
+            @Override
+            public int hashCode() {
+                return this.getClass().hashCode();
+            }
+        });
         return this;
     }
 
     public StringSchema contains(String substring) {
-        this.contains = substring;
+        addCheck(new Predicate<Object>() {
+            @Override
+            public boolean test(Object value) {
+                return ((String) value).contains(substring);
+            }
+
+            @Override
+            public int hashCode() {
+                return this.getClass().hashCode();
+            }
+        });
         return this;
-    }
-
-    @Override
-    public boolean isValid(String value) {
-        if (!checkRequired(value)) {
-            return false;
-        }
-
-        if (value == null || value.isEmpty()) {
-            return !(requiredState instanceof RequiredState);
-        }
-
-        if (minLength != null && value.length() < minLength) {
-            return false;
-        }
-
-        if (contains != null && !value.contains(contains)) {
-            return false;
-        }
-
-        return true;
     }
 }
