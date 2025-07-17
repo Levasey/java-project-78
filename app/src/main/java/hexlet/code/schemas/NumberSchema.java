@@ -1,45 +1,41 @@
 package hexlet.code.schemas;
 
-import hexlet.code.schemas.states.NotRequiredState;
+import java.util.function.Predicate;
 
-public class NumberSchema extends BaseSchema<Integer> {
-    private boolean positive = false;
-    private Integer minRange = null;
-    private Integer maxRange = null;
+public class NumberSchema extends BaseSchema {
+    public NumberSchema required() {
+        super.required();
+        return this;
+    }
 
     public NumberSchema positive() {
-        this.positive = true;
+        addCheck(new Predicate<Object>() {
+            @Override
+            public boolean test(Object value) {
+                return ((Integer) value) > 0;
+            }
+
+            @Override
+            public int hashCode() {
+                return this.getClass().hashCode();
+            }
+        });
         return this;
     }
 
     public NumberSchema range(int min, int max) {
-        this.minRange = min;
-        this.maxRange = max;
+        addCheck(new Predicate<Object>() {
+            @Override
+            public boolean test(Object value) {
+                int num = (Integer) value;
+                return num >= min && num <= max;
+            }
+
+            @Override
+            public int hashCode() {
+                return this.getClass().hashCode();
+            }
+        });
         return this;
-    }
-
-    @Override
-    public boolean isValid(Integer value) {
-        if (!checkRequired(value)) {
-            return false;
-        }
-
-        if (value == null) {
-            return requiredState instanceof NotRequiredState;
-        }
-
-        if (positive && value <= 0) {
-            return false;
-        }
-
-        if (minRange != null && value < minRange) {
-            return false;
-        }
-
-        if (maxRange != null && value > maxRange) {
-            return false;
-        }
-
-        return true;
     }
 }
