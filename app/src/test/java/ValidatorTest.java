@@ -1,3 +1,4 @@
+import hexlet.code.schemas.BaseSchema;
 import hexlet.code.schemas.MapSchema;
 import hexlet.code.schemas.NumberSchema;
 import hexlet.code.schemas.StringSchema;
@@ -82,6 +83,59 @@ public class ValidatorTest {
 
         data.put("key2", "value2");
         assertTrue(schema.isValid(data));
+    }
+
+    @Test
+    public void testShapeValidation() {
+        Validator v = new Validator();
+        MapSchema schema = v.map();
+
+        // Создаем схемы для проверки значений в Map
+        Map<String, BaseSchema> schemas = new HashMap<>();
+        schemas.put("firstName", v.string().required());
+        schemas.put("lastName", v.string().required().minLength(2));
+
+        schema.shape(schemas);
+
+        // Валидные данные
+        Map<String, String> human1 = new HashMap<>();
+        human1.put("firstName", "John");
+        human1.put("lastName", "Smith");
+        assertTrue(schema.isValid(human1));
+
+        // Отсутствует lastName
+        Map<String, String> human2 = new HashMap<>();
+        human2.put("firstName", "John");
+        assertFalse(schema.isValid(human2));
+
+        // lastName null
+        Map<String, String> human3 = new HashMap<>();
+        human3.put("firstName", "John");
+        human3.put("lastName", null);
+        assertFalse(schema.isValid(human3));
+
+        // lastName слишком короткий
+        Map<String, String> human4 = new HashMap<>();
+        human4.put("firstName", "Anna");
+        human4.put("lastName", "B");
+        assertFalse(schema.isValid(human4));
+
+        // Дополнительные тесты с разными типами данных
+        Map<String, BaseSchema> mixedSchemas = new HashMap<>();
+        mixedSchemas.put("name", v.string().required());
+        mixedSchemas.put("age", v.number().positive().range(18, 99));
+
+        schema.shape(mixedSchemas);
+
+        Map<String, Object> person1 = new HashMap<>();
+        person1.put("name", "Alice");
+        person1.put("age", 25);
+        assertTrue(schema.isValid(person1));
+
+        Map<String, Object> person2 = new HashMap<>();
+        person2.put("name", "Bob");
+        person2.put("age", 17);
+        assertFalse(schema.isValid(person2));
     }
 
     @Test

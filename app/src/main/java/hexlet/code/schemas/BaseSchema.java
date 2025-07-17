@@ -22,12 +22,7 @@ public abstract class BaseSchema {
         return this;
     }
 
-    protected String getCurrentState() {
-        return requirement.getCurrentState();
-    }
-
     protected void addCheck(Predicate<Object> predicate) {
-        // Удаляем предыдущий предикат того же типа, если он существует
         predicates.removeIf(p -> p.getClass().equals(predicate.getClass()));
         predicates.add(predicate);
     }
