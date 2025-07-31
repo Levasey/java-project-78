@@ -12,7 +12,7 @@ import java.util.function.Predicate;
  * Базовый абстрактный класс для всех схем валидации.
  * Определяет общую логику проверки значений.
  *
- * @param <T> Тип проверяемого значения
+ * @param <T> Тип проверяемого значения.
  */
 public abstract class BaseSchema<T> {
     private State<T> requirement = new NotRequiredState<>();
@@ -20,7 +20,7 @@ public abstract class BaseSchema<T> {
 
     /**
      * Устанавливает, что поле обязательно для заполнения.
-     * @return Текущий экземпляр схемы для цепочки вызовов
+     * @return Текущий экземпляр схемы для цепочки вызовов.
      */
     public BaseSchema<T> required() {
         this.requirement = new RequiredState<>();
@@ -31,7 +31,7 @@ public abstract class BaseSchema<T> {
      * Добавляет условие проверки значения.
      * Если проверка такого типа уже существует, она будет заменена.
      *
-     * @param predicate Лямбда-выражение для проверки значения
+     * @param predicate Лямбда-выражение для проверки значения.
      */
     protected final void addCheck(Predicate<T> predicate) {
         predicates.removeIf(p -> p.getClass().equals(predicate.getClass()));
@@ -39,9 +39,17 @@ public abstract class BaseSchema<T> {
     }
 
     /**
-    Принимает любой объект (Object) для валидации
-    Безопасно приводит его к нужному типу T
-    Делегирует проверку основному типизированному методу isValid
+     * Проверяет валидность непротипизированного объекта.
+     * <p>
+     * Метод выполняет безопасное приведение входящего объекта к generic-типу T
+     * и делегирует проверку основному типизированному методу {@link #isValid(Object)}.
+     * В случае ошибки приведения типов возвращает false.
+     * </p>
+     *
+     * @param value Объект для валидации (может быть любого типа).
+     * @return true если объект успешно приведен к типу T и валиден согласно схеме,
+     *         false в противном случае.
+     * @see #isValid(Object).
      */
     public boolean isValidUntyped(Object value) {
         //Пытаемся привести входящий Object к generic-типу T
@@ -58,8 +66,8 @@ public abstract class BaseSchema<T> {
     /**
      * Проверяет, соответствует ли значение всем условиям схемы.
      *
-     * @param value Проверяемое значение
-     * @return true если значение валидно, false в противном случае
+     * @param value Проверяемое значение.
+     * @return true если значение валидно, false в противном случае.
      */
     public boolean isValid(T value) {
         if (!requirement.isValid(value)) {
