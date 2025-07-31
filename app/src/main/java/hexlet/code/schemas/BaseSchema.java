@@ -8,17 +8,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-
+/**
+ * Базовый абстрактный класс для всех схем валидации.
+ * Определяет общую логику проверки значений.
+ *
+ * @param <T> Тип проверяемого значения
+ */
 public abstract class BaseSchema<T> {
     private State<T> requirement = new NotRequiredState<>();
     private final List<Predicate<T>> predicates = new ArrayList<>();
 
+    /**
+     * Устанавливает, что поле обязательно для заполнения.
+     * @return Текущий экземпляр схемы для цепочки вызовов
+     */
     public BaseSchema<T> required() {
         this.requirement = new RequiredState<>();
         return this;
     }
 
-    protected void addCheck(Predicate<T> predicate) {
+    /**
+     * Добавляет условие проверки значения.
+     * Если проверка такого типа уже существует, она будет заменена.
+     *
+     * @param predicate Лямбда-выражение для проверки значения
+     */
+    protected final void addCheck(Predicate<T> predicate) {
         predicates.removeIf(p -> p.getClass().equals(predicate.getClass()));
         predicates.add(predicate);
     }
@@ -40,6 +55,12 @@ public abstract class BaseSchema<T> {
         }
     }
 
+    /**
+     * Проверяет, соответствует ли значение всем условиям схемы.
+     *
+     * @param value Проверяемое значение
+     * @return true если значение валидно, false в противном случае
+     */
     public boolean isValid(T value) {
         if (!requirement.isValid(value)) {
             return false;
